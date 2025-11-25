@@ -43,7 +43,7 @@ def usdMaterialWithObjMtl(converter, filename):
                 continue
 
             arguments = list(filter(None, line.split(' ')))
-            command = arguments[0]
+            command = arguments[0].lower()
             arguments = arguments[1:]
 
             if 'newmtl' == command:
@@ -66,7 +66,7 @@ def usdMaterialWithObjMtl(converter, filename):
                         scaleFactor = diffuseColor
                 elif 'd' == command:
                     material.inputs[usdUtils.InputName.opacity] = arguments[0] if len(arguments) > 0 else 1
-                elif 'map_Kd' == command:
+                elif 'map_kd' == command:
                     textureFilename = usdUtils.resolvePath(' '.join(arguments), converter.srcFolder, converter.searchPaths)
                     material.inputs[usdUtils.InputName.diffuseColor] = usdUtils.Map('rgb', textureFilename, None, primvarName, wrapS, wrapT, scaleFactor)
                 elif 'map_bump' == command or 'bump' == command:

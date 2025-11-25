@@ -420,7 +420,8 @@ class FbxConverter:
 
             indices = self.getIndicesWithLayerElements(fbxMesh, fbxLayerNormals)
             interpolation = self.getInterpolationWithLayerElements(fbxLayerNormals)
-            normalPrimvar = usdMesh.CreatePrimvar('normals', Sdf.ValueTypeNames.Normal3fArray, interpolation)
+            primvars = UsdGeom.PrimvarsAPI(usdMesh.GetPrim())
+            normalPrimvar = primvars.CreatePrimvar('normals', Sdf.ValueTypeNames.Normal3fArray, interpolation)
             normalPrimvar.Set(normals)
             if len(indices) != 0:
                 normalPrimvar.SetIndices(Vt.IntArray(indices))
@@ -454,7 +455,8 @@ class FbxConverter:
                 else:
                     texCoordSet = usdUtils.makeValidIdentifier(texCoordSet)
 
-            uvPrimvar = usdMesh.CreatePrimvar(texCoordSet, Sdf.ValueTypeNames.Float2Array, interpolation)
+            primvars = UsdGeom.PrimvarsAPI(usdMesh.GetPrim())
+            uvPrimvar = primvars.CreatePrimvar(texCoordSet, Sdf.ValueTypeNames.Float2Array, interpolation)
             uvPrimvar.Set(uvs)
             if len(indices) != 0:
                 uvPrimvar.SetIndices(Vt.IntArray(indices))
