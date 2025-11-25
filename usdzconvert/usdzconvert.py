@@ -1,4 +1,3 @@
-#!/usr/bin/env python3.7
 import os.path
 from os import chdir
 import sys

@@ -1,0 +1,24 @@
+version = 1
+revision = 3
+requires-python = "==3.8.*"
+
+[[package]]
+name = "usd-core"
+version = "25.11"
+source = { registry = "https://pypi.org/simple" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/b8/17/b5a586cb93858d9f4530ee7f97f6806bc02ddf7f85d8ef981c71d5e8cb05/usd_core-25.11-cp38-none-macosx_10_9_universal2.whl", hash = "sha256:4b2f176f74c00e523fcf2eb45b3c5b8375d4f8b78e3e944c6f6a26cedf940a54", size = 38469246, upload-time = "2025-10-24T19:01:43.075Z" },
+    { url = "https://files.pythonhosted.org/packages/83/f1/b124b6e60d57f874608e3ed9ae6eef1ad96dce80d23d4968d4691ab38b19/usd_core-25.11-cp38-none-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:4a63a9b5bc8e229e1195c09a0aeebc344f83fd25d95588f040fcff1fd30dd76f", size = 27523257, upload-time = "2025-10-24T19:01:45.968Z" },
+    { url = "https://files.pythonhosted.org/packages/25/ea/8c371c4246ae243173c3d76afe70f9de8e52f340063a4565707e33753e0d/usd_core-25.11-cp38-none-win_amd64.whl", hash = "sha256:7eb2590baed31e3bf1f52915b74ce429e0436ebed3eae842c67baf02549cff8a", size = 13028257, upload-time = "2025-10-24T19:01:49.099Z" },
+]
+
+[[package]]
+name = "usdpython"
+version = "0.1.0"
+source = { virtual = "." }
+dependencies = [
+    { name = "usd-core" },
+]
+
+[package.metadata]
+requires-dist = [{ name = "usd-core" }]
