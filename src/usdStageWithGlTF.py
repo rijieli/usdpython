@@ -1228,6 +1228,7 @@ class glTFConverter:
         # bind material to mesh
         if 'material' in gltfPrimitive:
             materialIdx = gltfPrimitive['material']
+            UsdShade.MaterialBindingAPI.Apply(usdGeom.GetPrim())
             UsdShade.MaterialBindingAPI(usdGeom.GetPrim()).Bind(self.usdMaterials[materialIdx])
 
             gltfMaterial = self.gltf['materials'][materialIdx]

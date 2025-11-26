@@ -392,6 +392,8 @@ class Material:
             textureShader.CreateInput('scale', Sdf.ValueTypeNames.Float4).Set(Gf.Vec4f(2, 2, 2, 2))
             # float4 inputs:bias = (-1, -1, -1, -1)
             textureShader.CreateInput('bias', Sdf.ValueTypeNames.Float4).Set(Gf.Vec4f(-1, -1, -1, -1))
+            # Normal maps should use raw color space
+            textureShader.CreateInput('sourceColorSpace', Sdf.ValueTypeNames.Token).Set('raw')
         else:
             if map.scale != None:
                 gfScale = Gf.Vec4f(1)

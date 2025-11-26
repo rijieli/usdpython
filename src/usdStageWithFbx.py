@@ -581,7 +581,7 @@ class FbxConverter:
                     materialIndex = fbxLayerMaterials.GetIndexArray().GetAt(polygonIdx)
                     subsets[materialIndex].append(polygonIdx)
 
-                bindingAPI = UsdShade.MaterialBindingAPI(usdMesh)
+                bindingAPI = UsdShade.MaterialBindingAPI.Apply(usdMesh.GetPrim())
                 for materialIndex in range(materialsCount):
                     facesCount = len(subsets[materialIndex])
                     if facesCount > 0:
@@ -591,6 +591,7 @@ class FbxConverter:
                         if self.verbose:
                             print('  subset: ' + subsetName + ' faces: ' + str(facesCount))
                         usdSubset = UsdShade.MaterialBindingAPI.CreateMaterialBindSubset(bindingAPI, subsetName, Vt.IntArray(subsets[materialIndex]))
+                        UsdShade.MaterialBindingAPI.Apply(usdSubset.GetPrim())
                         usdMaterial = self.usdMaterials[fbxMaterial.GetName()]
                         UsdShade.MaterialBindingAPI(usdSubset).Bind(usdMaterial)
             elif fbxLayerMaterials.GetIndexArray().GetCount() > 0:
@@ -599,6 +600,7 @@ class FbxConverter:
                 if fbxMaterial is not None and fbxMaterial.GetName() in self.usdMaterials:
                     usdMaterial = self.usdMaterials[fbxMaterial.GetName()]
                     #UsdShade.Material.Bind(usdMaterial, usdMesh.GetPrim())
+                    UsdShade.MaterialBindingAPI.Apply(usdMesh.GetPrim())
                     UsdShade.MaterialBindingAPI(usdMesh.GetPrim()).Bind(usdMaterial)
 
 

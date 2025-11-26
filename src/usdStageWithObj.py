@@ -301,9 +301,10 @@ class ObjConverter:
                     print(usdUtils.makeValidIdentifier(self.materialNames[materialIndex]))
                 else:
                     print('defaultMaterial')
+            UsdShade.MaterialBindingAPI.Apply(usdMesh.GetPrim())
             UsdShade.MaterialBindingAPI(usdMesh).Bind(self.getUsdMaterial(materialIndex))
         else:
-            bindingAPI = UsdShade.MaterialBindingAPI(usdMesh)
+            bindingAPI = UsdShade.MaterialBindingAPI.Apply(usdMesh.GetPrim())
             for subset in group.subsets:
                 materialIndex = subset.materialIndex
                 if len(subset.faces) > 0:

@@ -19,11 +19,25 @@ https://developer.apple.com/videos/play/wwdc2019/602/
 
 ## usdzconvert (version 0.66)
 
-`usdzconvert` is a Python script that converts obj, gltf, fbx, abc, and usda/usdc/usd assets to usdz.
+`usdzconvert` is a Python script that converts various 3D file formats to USDZ.
 It also performs asset validation on the generated usdz.
 For more information, run 
 
     usdzconvert -h
+
+### Supported Input Formats
+
+| Format | Extension | Type | Description |
+| ------ | --------- | ---- | ----------- |
+| OBJ | `.obj` | Multi-file | Wavefront OBJ with `.mtl` and textures (folder input auto-enables MTL) |
+| glTF | `.gltf` | Multi-file | GL Transmission Format (text) with `.bin` data and textures |
+| GLB | `.glb` | Single file | GL Transmission Format (binary, all assets embedded) |
+| FBX | `.fbx` | Single file | Autodesk FBX (requires FBX SDK, see below) |
+| Alembic | `.abc` | Single file | Alembic interchange format |
+| USD | `.usd`, `.usda`, `.usdc` | Multi-file | Universal Scene Description (may reference textures) |
+| USDZ | `.usdz` | Single file | Compressed USD package (all assets bundled) |
+
+> **Note:** USDZ → USDZ conversion is useful for modifying metadata (`-url`, `-creator`, `-copyright`), adjusting scale (`-metersPerUnit`), changing animation loop settings (`-loop`/`-no-loop`), or applying iOS 12 compatibility (`-iOS12`).
 
 ### Usage
 
@@ -36,8 +50,16 @@ uv run src/usdzconvert.py [options] inputFile [outputFile]
 
 OBJ files support both file and folder input:
 ```bash
-./usdzconvert model.obj -useObjMtl          # File input
-./usdzconvert model_folder/ -useObjMtl     # Folder input (auto-finds .obj, .mtl, textures)
+./usdzconvert model.obj -useObjMtl      # File input with MTL materials
+./usdzconvert model_folder/             # Folder input (auto-enables -useObjMtl)
+```
+
+Output file handling:
+```bash
+./usdzconvert model.obj                 # Output: model.usdz (same folder)
+./usdzconvert model.obj output          # Output: output.usdz (auto-adds .usdz)
+./usdzconvert model.obj output.usdz     # Output: output.usdz (in source folder)
+./usdzconvert input.usdz                # Output: input_converted.usdz (adds suffix)
 ```
 
 ### iOS 12 Compatibility

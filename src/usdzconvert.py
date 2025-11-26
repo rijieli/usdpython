@@ -50,7 +50,7 @@ class ParserOut:
         self.verbose = False
         self.copyTextures = False
         self.iOS12 = False
-        self.paths = None
+        self.paths = []
         self.url = ''
         self.creator = ''
         self.copyright = ''
@@ -592,9 +592,13 @@ def process(argumentList):
 
     srcPath = ''
     inputPath = parserOut.inFilePath
+    inputIsDir = False
+    inputDirPath = ''
     
     # Check if input is a directory
     if os.path.isdir(inputPath):
+        inputIsDir = True
+        inputDirPath = inputPath.rstrip('/')
         # For OBJ files, find the .obj file in the directory
         objFiles = [f for f in os.listdir(inputPath) if f.lower().endswith('.obj')]
         if len(objFiles) == 0:
@@ -605,6 +609,8 @@ def process(argumentList):
             srcPath = os.path.join(inputPath, objFiles[0])
         else:
             srcPath = os.path.join(inputPath, objFiles[0])
+        # Automatically enable useObjMtl when folder is passed
+        parserOut.useObjMtl = True
     elif os.path.isfile(inputPath):
         srcPath = inputPath
     elif os.path.dirname(inputPath) == '' and parserOut.argumentFile:
@@ -622,28 +628,51 @@ def process(argumentList):
     if len(fileAndExt) != 2:
         parser.printErrorUsageAndExit('input file ' + srcPath + ' has unsupported file extension.')
 
-    print('Input file: ' +  srcPath)
+    print('📂 Input: ' + srcPath)
     srcExt = fileAndExt[1].lower()
+    srcFolder = os.path.dirname(srcPath)
 
     dstIsUsdz = False
     dstPath = parserOut.outFilePath
     dstExt = ''
     if dstPath == '':
-        # default destination file is .usdz file in the same folder as source file
+        # default destination file is .usdz file
         dstExt = '.usdz'
-        dstPath = fileAndExt[0] + dstExt
+        if inputIsDir:
+            # If input is a folder, output named after folder in parent directory
+            dstPath = inputDirPath + dstExt
+        elif srcExt == '.usdz':
+            # If input is .usdz, add suffix to avoid overwriting
+            dstPath = fileAndExt[0] + '_converted' + dstExt
+        else:
+            dstPath = fileAndExt[0] + dstExt
         dstIsUsdz = True
+    else:
+        # If output is just a filename (no directory), place it in parent folder of input
+        if os.path.dirname(dstPath) == '':
+            if inputIsDir:
+                parentFolder = os.path.dirname(inputDirPath)
+                if parentFolder:
+                    dstPath = os.path.join(parentFolder, dstPath)
+            elif srcFolder:
+                dstPath = os.path.join(srcFolder, dstPath)
 
     dstFileAndExt = os.path.splitext(dstPath)
-    if len(dstFileAndExt) != 2:
-        parser.printErrorUsageAndExit('output file ' + dstPath + ' has unsupported file extension.')
-
-    if not dstIsUsdz:
+    
+    # If no extension or invalid extension, add .usdz
+    if len(dstFileAndExt) != 2 or dstFileAndExt[1] == '':
+        dstPath = dstPath + '.usdz'
+        dstExt = '.usdz'
+        dstIsUsdz = True
+    elif not dstIsUsdz:
         dstExt = dstFileAndExt[1].lower()
         if dstExt == '.usdz':
             dstIsUsdz = True
         elif dstExt != '.usd' and dstExt != '.usdc' and dstExt != '.usda':
-            parser.printErrorUsageAndExit('output file ' + dstPath + ' should have .usdz, .usdc, .usda or .usd extension.')
+            # Unknown extension, append .usdz
+            dstPath = dstPath + '.usdz'
+            dstExt = '.usdz'
+            dstIsUsdz = True
 
     tmpFolder = tempfile.mkdtemp('usdzconvert')
 
@@ -651,7 +680,7 @@ def process(argumentList):
     if parserOut.iOS12:
         iOS12Compatible_module = importlib.import_module("iOS12LegacyModifier")
         legacyModifier = iOS12Compatible_module.createLegacyModifier()
-        print('Converting in iOS12 compatiblity mode.')
+        print('📱 Converting in iOS12 compatibility mode.')
 
     tmpPath = dstFileAndExt[0] + '.usdc' if dstIsUsdz else dstPath
     tmpBasename = os.path.basename(tmpPath)
@@ -828,7 +857,6 @@ def process(argumentList):
         copyTexturesFromStageToFolder(params, tmpPath, dstFolder)
 
     rmtree(tmpFolder, ignore_errors=True)
-    print('Output file: ' + dstPath)
 
     arkitCheckerReturn = 0
     if dstIsUsdz:
@@ -837,11 +865,12 @@ def process(argumentList):
         if parserOut.verbose:
             usdcheckerArgs.append('-v')
         scriptFolder = os.path.dirname(os.path.realpath(__file__))
-        spec = importlib.util.spec_from_loader("usdARKitChecker", importlib.machinery.SourceFileLoader("usdARKitChecker", scriptFolder + '/usdARKitChecker'))
+        spec = importlib.util.spec_from_loader("usdARKitChecker", importlib.machinery.SourceFileLoader("usdARKitChecker", scriptFolder + '/usdARKitChecker.py'))
         usdARKitChecker = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(usdARKitChecker)
         arkitCheckerReturn = usdARKitChecker.main(usdcheckerArgs)
 
+    print('✅ Converted to ' + os.path.dirname(dstPath) + '| file name:' + os.path.basename(dstPath))
 
     return arkitCheckerReturn
 

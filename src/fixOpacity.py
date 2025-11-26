@@ -2,7 +2,7 @@
 import zipfile
 import os, shutil, sys, argparse
 import fnmatch
-from pxr import *
+from pxr import Usd, UsdGeom, UsdShade, Sdf, UsdUtils
 # TODO: remove PIL to replace with binary
 from PIL import Image
 
