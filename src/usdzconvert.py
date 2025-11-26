@@ -526,6 +526,21 @@ def copyTexturesFromStageToFolder(params, srcPath, folder):
                 dstPath = folder + '/' + filename
                 usdUtils.copy(filePath, dstPath, params.verbose)
                 copiedFiles[filename] = filename
+
+                # In some pipelines (including usd-core + ARKit packaging),
+                # the asset localization step may rewrite texture references
+                # to use a "0/<basename>" prefix (e.g. "@0/texture.jpg@"),
+                # while the authored path in the stage remains just "texture.jpg".
+                # This can lead to warnings like:
+                #   Failed to resolve reference @0/texture.jpg@
+                # To make the localization step more robust, also copy a
+                # duplicate of the texture into a "0" subfolder so that both
+                # "<folder>/<basename>" and "<folder>/0/<basename>" exist.
+                basename = os.path.basename(filename)
+                zeroPrefixedPath = folder + '/0/' + basename
+                # Avoid redundant copy if the file is already under a "0/" path
+                if os.path.normpath(zeroPrefixedPath) != os.path.normpath(dstPath):
+                    usdUtils.copy(filePath, zeroPrefixedPath, params.verbose)
             elif params.verbose:
                 usdUtils.printWarning("Texture file not found: " + filename)
 
