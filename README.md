@@ -1,19 +1,18 @@
 # USD Python Tools
 
-This package installs to /Applications/usdpython and contains
+**⚠️ This project requires [uv](https://github.com/astral-sh/uv) to run.** Install uv first, then all dependencies will be automatically managed.
+
+This package contains:
 - `usdzconvert`, a Python-based tool to convert from various file formats to usdz
 - `usdARKitChecker`, a Python-based tool for usdz validation
-- precompiled macOS Python modules for Pixar's USD library
 - a set of sample scripts that demonstrate how to write usd files
 - the `fixOpacity` tool
 - `usdzcreateassetlib`, a standalone tool to generate an asset library from multiple assets
 - `usdzaudioimport`, a standalone tool to attach audio files to usdz files
 
-After installation you can relocate the files.
-
-IMPORTANT! This version of USD Python tools uses Python 3.8. You can download and install Python 3.8 (recommended) from https://www.python.org/downloads/release/python-380/.
-
-The easiest way to start using these command-line tools is to double-click `USD.command` in the Finder. This will open a Terminal window with all necessary environment variables set.
+**Requirements:**
+- [uv](https://github.com/astral-sh/uv) package manager
+- Python 3.8 (automatically managed by uv)
 
 For more details, including demos, see the WWDC 2019 session "Working with USD": 
 https://developer.apple.com/videos/play/wwdc2019/602/
@@ -31,12 +30,14 @@ For more information, run
 Run with `uv`:
 ```bash
 ./usdzconvert.sh [options] inputFile [outputFile]
+# or directly:
+uv run usdzconvert/usdzconvert.py [options] inputFile [outputFile]
 ```
 
 OBJ files support both file and folder input:
 ```bash
-usdzconvert model.obj -useObjMtl          # File input
-usdzconvert model_folder/ -useObjMtl     # Folder input (auto-finds .obj, .mtl, textures)
+./usdzconvert.sh model.obj -useObjMtl          # File input
+./usdzconvert.sh model_folder/ -useObjMtl     # Folder input (auto-finds .obj, .mtl, textures)
 ```
 
 ### iOS 12 Compatibility
@@ -45,18 +46,15 @@ Use `-iOS12` flag for iOS 12 compatibility.
 
 ### FBX Support
 
-Requires Autodesk FBX SDK. Update `USD.command` to include FBX Python bindings path (for Python 3.8).
+Requires Autodesk FBX SDK. Set `PYTHONPATH` environment variable before running to include FBX Python bindings path (for Python 3.8).
 
 ## usdARKitChecker
 
 Validates usdz files. Automatically run by `usdzconvert`, or use standalone: `usdARKitChecker -h`
 
-## USD Library (Version 19.11)
+## USD Library
 
-Compiled with Python 3.8 using USD 22.03. Set environment variables:
-
-    export PATH=$PATH:<PATH_TO_USDPYTHON>/USD
-    export PYTHONPATH=$PYTHONPATH:<PATH_TO_USDPYTHON>/USD/lib/python
+USD library is provided via the `usd-core` package dependency, automatically installed and managed by `uv`. No manual environment variable setup is required.
 
 ## Samples
 
