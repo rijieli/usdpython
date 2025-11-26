@@ -3,12 +3,12 @@
 **⚠️ This project requires [uv](https://github.com/astral-sh/uv) to run.** Install uv first, then all dependencies will be automatically managed.
 
 This package contains:
-- `usdzconvert`, a Python-based tool to convert from various file formats to usdz
-- `usdARKitChecker`, a Python-based tool for usdz validation
-- a set of sample scripts that demonstrate how to write usd files
-- the `fixOpacity` tool
-- `usdzcreateassetlib`, a standalone tool to generate an asset library from multiple assets
-- `usdzaudioimport`, a standalone tool to attach audio files to usdz files
+- `usdzconvert` - converts from various file formats to usdz (use `./usdzconvert`)
+- `usdARKitChecker` - validates usdz files (use `./usdARKitChecker`)
+- Sample scripts - demonstrate how to write usd files (in `samples/` directory)
+- `fixOpacity` - fixes translucent materials (use `./fixOpacity`)
+- `usdzcreateassetlib` - generates asset library from multiple usdz assets (use `./usdzcreateassetlib`)
+- `usdzaudioimport` - attaches audio files to usdz files (use `./usdzaudioimport`)
 
 **Requirements:**
 - [uv](https://github.com/astral-sh/uv) package manager
@@ -29,15 +29,15 @@ For more information, run
 
 Run with `uv`:
 ```bash
-./usdzconvert.sh [options] inputFile [outputFile]
+./usdzconvert [options] inputFile [outputFile]
 # or directly:
-uv run usdzconvert/usdzconvert.py [options] inputFile [outputFile]
+uv run src/usdzconvert.py [options] inputFile [outputFile]
 ```
 
 OBJ files support both file and folder input:
 ```bash
-./usdzconvert.sh model.obj -useObjMtl          # File input
-./usdzconvert.sh model_folder/ -useObjMtl     # Folder input (auto-finds .obj, .mtl, textures)
+./usdzconvert model.obj -useObjMtl          # File input
+./usdzconvert model_folder/ -useObjMtl     # Folder input (auto-finds .obj, .mtl, textures)
 ```
 
 ### iOS 12 Compatibility
@@ -50,7 +50,11 @@ Requires Autodesk FBX SDK. Set `PYTHONPATH` environment variable before running 
 
 ## usdARKitChecker
 
-Validates usdz files. Automatically run by `usdzconvert`, or use standalone: `usdARKitChecker -h`
+Validates usdz files. Automatically run by `usdzconvert`, or use standalone:
+
+```bash
+./usdARKitChecker [options] file.usdz
+```
 
 ## USD Library
 
@@ -75,14 +79,26 @@ Example scripts demonstrating USD features (geometry, materials, animation, etc.
 
 ## fixOpacity
 
-Fixes translucent materials that render opaque in iOS 13: `fixOpacity model.usdz`
+Fixes translucent materials that render opaque in iOS 13:
+
+```bash
+./fixOpacity model.usdz
+```
 
 ## usdzcreateassetlib
 
-Generates a single-file asset library from multiple usdz assets (nested usdz with variant sets).
+Generates a single-file asset library from multiple usdz assets (nested usdz with variant sets):
+
+```bash
+./usdzcreateassetlib outputFile.usdz asset1.usdz [asset2.usdz [...]]
+```
 
 ## usdzaudioimport
 
-Attaches audio files to usdz files with SpatialAudio nodes: `usdzaudioimport -h`
+Attaches audio files to usdz files with SpatialAudio nodes:
+
+```bash
+./usdzaudioimport inputFile.usdz [outputFile] [options]
+```
 
 

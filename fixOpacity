@@ -1,0 +1,18 @@
+#!/bin/bash
+
+# Get the directory where this script is located
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+# Change to the script directory (project root)
+cd "$SCRIPT_DIR"
+
+# Check if uv is installed
+if ! command -v uv &> /dev/null; then
+    echo "Error: uv is not installed or not in PATH" >&2
+    echo "Please install uv from https://github.com/astral-sh/uv" >&2
+    exit 1
+fi
+
+# Run fixOpacity.py using uv
+uv run src/fixOpacity.py "$@"
+
