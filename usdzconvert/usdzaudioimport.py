@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-
 # add audio file to usdz:
 # usdzaudioimport input.usdz output.usdz --audio <sdf_path> <audio_file>
 

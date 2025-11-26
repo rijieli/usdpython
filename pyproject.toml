@@ -3,6 +3,7 @@ name = "usdpython"
 version = "0.1.0"
 requires-python = ">=3.8,<3.9"
 dependencies = [
+    "pillow>=10.4.0",
     "usd-core",
 ]
 

@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-
 # Fix opacity wiring for usdz generated with xcode's usdz_converter 
 import zipfile
 import os, shutil, sys, argparse
@@ -98,7 +96,7 @@ def gatherDiffuseTexture(materialPrim):
 		except:
 			if verboseOutput: print("Warning: unable to find texture in shader " + pbrShader.GetPath().pathString)
 			return None
-		if assetPath.resolvedPath is not "":
+		if assetPath.resolvedPath != "":
 			return (assetPath.resolvedPath, pbrShader.GetPath().pathString)
 		else:
 			print("Warning: unable to find texture" + assetPath.path + " in archive")

@@ -26,61 +26,41 @@ For more information, run
 
     usdzconvert -h
 
+### Usage
+
+Run with `uv`:
+```bash
+./usdzconvert.sh [options] inputFile [outputFile]
+```
+
+OBJ files support both file and folder input:
+```bash
+usdzconvert model.obj -useObjMtl          # File input
+usdzconvert model_folder/ -useObjMtl     # Folder input (auto-finds .obj, .mtl, textures)
+```
+
 ### iOS 12 Compatibility
 
-To export .usdz files that play back correctly on iOS 12, use `usdzconvert`'s  `-iOS12` compatibility switch. When run with `-iOS12`, `usdzconvert` will use the Python Imaging Library (PIL) module to do texture conversion. 
-If your Python environment is missing PIL, you can install it by running:
-
-    pip install pillow
+Use `-iOS12` flag for iOS 12 compatibility.
 
 ### FBX Support
 
-Note that FBX support in `usdzconvert` requires both Autodesk's FBX SDK and FBX Python bindings to be installed on your system.
-To make FBX bindings available to Python, uncomment the line 
-
-    export PYTHONPATH=$PYTHONPATH:"/Applications/Autodesk/FBX Python SDK/2020.2.1/lib/Python37_x64"
-
-in `USD.command`, and adjust the path to point to the location of fbx.so (for Python 3.8).
+Requires Autodesk FBX SDK. Update `USD.command` to include FBX Python bindings path (for Python 3.8).
 
 ## usdARKitChecker
 
-`usdARKitChecker` is a Python script that validates existing usdz files. It is automatically run by `usdzconvert`, but can also be used as a stand-alone tool to validate files from other sources.
-For more information, run 
+Validates usdz files. Automatically run by `usdzconvert`, or use standalone: `usdARKitChecker -h`
 
-    usdARKitChecker -h
+## USD Library (Version 19.11)
 
-Currently `usdARKitChecker` consists of three parts:
-- validation through Pixar's `usdchecker`
-- mesh attribute validation
-- UsdPreviewSurface material validation
-
-## Precompiled macOS Python Modules for Pixar's USD Library (Version 19.11)
-
-This library was compiled using version 3.8 of Python.
-
-This library was compiled using version 22.03 of [the public USD GitHub repository](http://openusd.org) with the following build script arguments (see USDPython/README.md for further details):
-
-    python3.8 USD/build_scripts/build_usd.py --build-args TBB,extra_inc=big_iron.inc --python --no-imaging --docs --no-usdview --build-monolithic USDPython
-
-If you prefer to set your environment variables directly , 
-
-To start using USD in Python, set your PATH and PYTHONPATH variables as follows (replace `<PATH_TO_USDPYTHON>` with the path to this USDPython folder):
+Compiled with Python 3.8 using USD 22.03. Set environment variables:
 
     export PATH=$PATH:<PATH_TO_USDPYTHON>/USD
     export PYTHONPATH=$PYTHONPATH:<PATH_TO_USDPYTHON>/USD/lib/python
 
-You should then be able to start using the USD library in Python 3.8:
-
-    > python3.8
-    Python 3.8.x
-    Type "help", "copyright", "credits" or "license" for more information.
-    >>> import pxr
-    >>> 
-
 ## Samples
 
-The `samples` folder contains a set of simple scripts that focus on different aspects of writing USD data, such as geometry, materials, skinning and animation. 
-Each script generates a .usd and a .usdz file in the `assets` sub folder, and also prints the generated .usd file's content.
+Example scripts demonstrating USD features (geometry, materials, animation, etc.).
 
 | Script | Purpose |
 | ------ | --- |
@@ -91,25 +71,20 @@ Each script generates a .usd and a .usdz file in the `assets` sub folder, and al
 | `105_pbrMaterial.py` | creates a cube mesh and assigns it a more complex PBR material with textures for normal, roughness and diffuse channels |
 | `106_meshGroups.py` | creates a cube mesh with two mesh groups and assigns each a separate material |
 | `107_transformAnimation.py` |  builds a scene graph of several objects and sets (animated) translate, rotate, and scale transforms |
-| `109_skinnedAnimation.py` | creates an animated skinned cube |
+| `108_skinnedAnimation.py` | creates an animated skinned cube |
 | `201_subdivision.py` | creates a subdivided cube with creases |
 | `202_references.py` | creates an asset file then a reference file that reference and overwrite the asset file|
 
 ## fixOpacity
 
-If you converted your usdz asset with Xcode's usdz_converter, and it has translucent materials that render opaque in iOS 13, use this script to correct the asset's translucent materials:
-
-    fixOpacity model.usdz
+Fixes translucent materials that render opaque in iOS 13: `fixOpacity model.usdz`
 
 ## usdzcreateassetlib
 
-usdzcreateassetlib is a script that generates a single-file asset library from multiple usdz assets. The result is a nested usdz file that contains the source usdz assets and references them in a variant set.
-This script does not depend on the USD library, which should make it easy to deploy on servers.
+Generates a single-file asset library from multiple usdz assets (nested usdz with variant sets).
 
 ## usdzaudioimport
 
-usdzaudioimport is a script to attach sound/audio files into existing a usdz file. With this tool users can create SpatialAudio nodes in usdz file and specify parameters for it. For more information, run:
-
-    usdzaudioimport -h
+Attaches audio files to usdz files with SpatialAudio nodes: `usdzaudioimport -h`
 
 

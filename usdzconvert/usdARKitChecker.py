@@ -1,4 +1,4 @@
-#!/usr/bin/python
+
 
 import subprocess, sys, os, argparse
 from pxr import *

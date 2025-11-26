@@ -1,5 +1,3 @@
-#!/usr/bin/python
-
 import os, struct, sys, time, binascii
 from collections import namedtuple
 
@@ -164,7 +162,7 @@ for filename in sys.argv[1:]:
         allArgumentsUSDZ = False
 
 if len(sys.argv) < 3 or not allArgumentsUSDZ:
-    print 'usage:\n    usdzcreateassetlib outputFile.usdz asset1.usdz [asset2.usdz [...]]'
+    print('usage:\n    usdzcreateassetlib outputFile.usdz asset1.usdz [asset2.usdz [...]]')
     sys.exit(0)
 
 fileInfos = []
