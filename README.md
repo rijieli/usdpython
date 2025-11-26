@@ -11,7 +11,7 @@ This package installs to /Applications/usdpython and contains
 
 After installation you can relocate the files.
 
-IMPORTANT! This version of USD Python tools uses Python 3.7. You can download and install Python 3.7.9 (recommended) from https://www.python.org/downloads/release/python-379/.
+IMPORTANT! This version of USD Python tools uses Python 3.8. You can download and install Python 3.8 (recommended) from https://www.python.org/downloads/release/python-380/.
 
 The easiest way to start using these command-line tools is to double-click `USD.command` in the Finder. This will open a Terminal window with all necessary environment variables set.
 
@@ -40,7 +40,7 @@ To make FBX bindings available to Python, uncomment the line
 
     export PYTHONPATH=$PYTHONPATH:"/Applications/Autodesk/FBX Python SDK/2020.2.1/lib/Python37_x64"
 
-in `USD.command`, and adjust the path to point to the location of fbx.so (for Python 3.7).
+in `USD.command`, and adjust the path to point to the location of fbx.so (for Python 3.8).
 
 ## usdARKitChecker
 
@@ -56,11 +56,11 @@ Currently `usdARKitChecker` consists of three parts:
 
 ## Precompiled macOS Python Modules for Pixar's USD Library (Version 19.11)
 
-This library was compiled using version 3.7.9 of Python.
+This library was compiled using version 3.8 of Python.
 
 This library was compiled using version 22.03 of [the public USD GitHub repository](http://openusd.org) with the following build script arguments (see USDPython/README.md for further details):
 
-    python3.7 USD/build_scripts/build_usd.py --build-args TBB,extra_inc=big_iron.inc --python --no-imaging --docs --no-usdview --build-monolithic USDPython
+    python3.8 USD/build_scripts/build_usd.py --build-args TBB,extra_inc=big_iron.inc --python --no-imaging --docs --no-usdview --build-monolithic USDPython
 
 If you prefer to set your environment variables directly , 
 
@@ -69,10 +69,10 @@ To start using USD in Python, set your PATH and PYTHONPATH variables as follows 
     export PATH=$PATH:<PATH_TO_USDPYTHON>/USD
     export PYTHONPATH=$PYTHONPATH:<PATH_TO_USDPYTHON>/USD/lib/python
 
-You should then be able to start using the USD library in Python 3.7:
+You should then be able to start using the USD library in Python 3.8:
 
-    > python3.7
-    Python 3.7.9 (v3.7.9:13c94747c7, Aug 15 2020, 01:31:08)
+    > python3.8
+    Python 3.8.x
     Type "help", "copyright", "credits" or "license" for more information.
     >>> import pxr
     >>> 

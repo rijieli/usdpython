@@ -488,7 +488,7 @@ def findUsdMaterial(params, name):
 
 def copyTexturesFromStageToFolder(params, srcPath, folder):
     copiedFiles = {}
-    srcFolder = os.path.dirname(srcPath)
+    srcFolder = os.path.dirname(srcPath) if srcPath else ''
     for path, usdMaterial in params.usdMaterials.items():
         for childShader in usdMaterial.GetPrim().GetChildren():
             idAttribute = childShader.GetAttribute('info:id')
@@ -505,12 +505,29 @@ def copyTexturesFromStageToFolder(params, srcPath, folder):
                 continue
             if filename in copiedFiles:
                 continue
-            if srcFolder and filename[0] != '/':
-                filePath = srcFolder + '/' + filename
-            else:
+            
+            # Try to find the texture file
+            filePath = None
+            if os.path.isabs(filename) or os.path.isfile(filename):
+                # Absolute path or file exists in current directory
                 filePath = filename
-            usdUtils.copy(filePath, folder + '/' + filename, params.verbose)
-            copiedFiles[filename] = filename
+            elif srcFolder:
+                # Try relative to source folder
+                if os.path.isfile(srcFolder + '/' + filename):
+                    filePath = srcFolder + '/' + filename
+                else:
+                    # Try to resolve using usdUtils.resolvePath
+                    resolvedPath = usdUtils.resolvePath(filename, srcFolder, None)
+                    if os.path.isfile(resolvedPath):
+                        filePath = resolvedPath
+            
+            if filePath and os.path.isfile(filePath):
+                # Preserve relative path structure in destination
+                dstPath = folder + '/' + filename
+                usdUtils.copy(filePath, dstPath, params.verbose)
+                copiedFiles[filename] = filename
+            elif params.verbose:
+                usdUtils.printWarning("Texture file not found: " + filename)
 
 
 def copyMaterialTextures(params, material, srcPath, dstPath, folder):
@@ -574,22 +591,36 @@ def process(argumentList):
     parserOut = parser.parse(argumentList)
 
     srcPath = ''
-    if os.path.isfile(parserOut.inFilePath):
-        srcPath = parserOut.inFilePath
-    elif os.path.dirname(parserOut.inFilePath) == '' and parserOut.argumentFile:
+    inputPath = parserOut.inFilePath
+    
+    # Check if input is a directory
+    if os.path.isdir(inputPath):
+        # For OBJ files, find the .obj file in the directory
+        objFiles = [f for f in os.listdir(inputPath) if f.lower().endswith('.obj')]
+        if len(objFiles) == 0:
+            parser.printErrorUsageAndExit('No .obj file found in directory: ' + inputPath)
+        elif len(objFiles) > 1:
+            if parserOut.verbose:
+                usdUtils.printWarning('Multiple .obj files found in directory. Using: ' + objFiles[0])
+            srcPath = os.path.join(inputPath, objFiles[0])
+        else:
+            srcPath = os.path.join(inputPath, objFiles[0])
+    elif os.path.isfile(inputPath):
+        srcPath = inputPath
+    elif os.path.dirname(inputPath) == '' and parserOut.argumentFile:
         # try to find input file in argument file folder which is specified by -f in command line
         argumentFileDir = os.path.dirname(parserOut.argumentFile)
         if argumentFileDir:
             os.chdir(argumentFileDir)
-            if os.path.isfile(parserOut.inFilePath):
-                srcPath = parserOut.inFilePath
+            if os.path.isfile(inputPath):
+                srcPath = inputPath
 
     if srcPath == '':
-        parser.printErrorUsageAndExit('input file ' + parserOut.inFilePath + ' does not exist.')
+        parser.printErrorUsageAndExit('input file or directory ' + parserOut.inFilePath + ' does not exist.')
 
     fileAndExt = os.path.splitext(srcPath)
     if len(fileAndExt) != 2:
-        parser.printErrorUsageAndExit('input file ' + parserOut.inFilePath + ' has unsupported file extension.')
+        parser.printErrorUsageAndExit('input file ' + srcPath + ' has unsupported file extension.')
 
     print('Input file: ' +  srcPath)
     srcExt = fileAndExt[1].lower()
@@ -631,7 +662,12 @@ def process(argumentList):
 
     openParameters = OpenParameters()
     openParameters.copyTextures = parserOut.copyTextures and not dstIsUsdz
-    openParameters.searchPaths = parserOut.paths
+    # Add source directory to search paths to find MTL files and textures
+    srcDir = os.path.dirname(srcPath)
+    if srcDir and srcDir not in parserOut.paths:
+        openParameters.searchPaths = [srcDir] + parserOut.paths
+    else:
+        openParameters.searchPaths = parserOut.paths
     openParameters.verbose = parserOut.verbose
 
     srcIsUsd = False
@@ -776,6 +812,12 @@ def process(argumentList):
         os.makedirs(dstFolder)
 
     if dstIsUsdz:
+        # copy all textures to temporary folder before creating usdz
+        # This ensures textures from MTL files and other sources are included
+        # Use original srcPath for OBJ/GLTF/FBX files to correctly resolve relative texture paths
+        # For USD files, use tmpPath since textures are already referenced relative to the USD file
+        textureSourcePath = srcPath if not srcIsUsd and not srcIsUsdz else tmpPath
+        copyTexturesFromStageToFolder(params, textureSourcePath, tmpFolder)
         # construct .usdz archive from the .usdc file
         UsdUtils.CreateNewARKitUsdzPackage(Sdf.AssetPath(tmpPath), dstPath)
     else:
